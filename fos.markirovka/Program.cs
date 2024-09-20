@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using System.IO;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 public class Program
 {
@@ -15,7 +16,7 @@ public class Program
     {
         File.WriteAllLines(Path.GetTempPath() + Guid.NewGuid().ToString() + ".txt", Environment.GetCommandLineArgs());
     }
-    
+
     public static void Main(string[] args)
     {
         Console.WriteLine("Приложение обработчик печати этикеток честный знак");
@@ -49,48 +50,83 @@ public class Program
                         break;
                 }
             }
-            filename = "lp";
-            arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d {2} km.png", media, printer);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                filename = "lp";
+                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
 
-            Console.Write(filename + " " + arguments);
-            using (Process process = new Process())
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = filename;
-                startInfo.Arguments = arguments;
-                process.StartInfo = startInfo;
-                process.Start();
-                do
+                Console.Write(filename + " " + arguments);
+                using (Process process = new Process())
                 {
-                    if (!process.HasExited)
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = filename;
+                    startInfo.Arguments = arguments;
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    do
                     {
-                        process.Refresh();
+                        if (!process.HasExited)
+                        {
+                            process.Refresh();
+                        }
                     }
+                    while (!process.WaitForExit(1000));
+                    Console.WriteLine("Отправили на печать этикетку");
                 }
-                while (!process.WaitForExit(1000));
-                Console.WriteLine("exit code: " + process.ExitCode);
-                Console.WriteLine("Отправили на печать этикетку");
             }
-            using (Process process = new Process())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "osascript";
-                startInfo.Arguments = "-e 'display notification \"Отправили на печать этикетку\" with title \"1ОС.Маркировка\"  sound name \"Submarine\"'";
-                process.StartInfo = startInfo;
-                process.Start();
-                do
+                filename = "lp";
+                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
+
+                Console.Write(filename + " " + arguments);
+                using (Process process = new Process())
                 {
-                    if (!process.HasExited)
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = filename;
+                    startInfo.Arguments = arguments;
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    do
                     {
-                        process.Refresh();
+                        if (!process.HasExited)
+                        {
+                            process.Refresh();
+                        }
                     }
+                    while (!process.WaitForExit(1000));
+                    Console.WriteLine("Отправили на печать этикетку");
                 }
-                while (!process.WaitForExit(1000));
             }
-            // Thread.Sleep(5);
-            // File.Delete(filepath);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                filename = "lp";
+                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
+
+                Console.Write(filename + " " + arguments);
+                using (Process process = new Process())
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = filename;
+                    startInfo.Arguments = arguments;
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    do
+                    {
+                        if (!process.HasExited)
+                        {
+                            process.Refresh();
+                        }
+                    }
+                    while (!process.WaitForExit(1000));
+                    Console.WriteLine("Отправили на печать этикетку");
+                }
+            }
+            Thread.Sleep(5);
+            File.Delete(filepath);
         }
         else
         {
@@ -117,24 +153,6 @@ public class Program
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 Console.WriteLine("Успешно настроили приложение для работы OSX.");
-                //"osascript -e 'tell app \"System Events\" to display dialog \"Успешно настроили приложение для работы OSX.\"'"        
-                using (Process process = new Process())
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    startInfo.FileName = "osascript";
-                    startInfo.Arguments = "-e 'display notification \"Успешно настроили приложение для работы OSX.\" with title \"1ОС.Маркировка\"  sound name \"Submarine\"'";
-                    process.StartInfo = startInfo;
-                    process.Start();
-                    do
-                    {
-                        if (!process.HasExited)
-                        {
-                            process.Refresh();
-                        }
-                    }
-                    while (!process.WaitForExit(1000));
-                }
             }
         }
     }
