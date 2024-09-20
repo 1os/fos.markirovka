@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using System.IO;
-using Microsoft.Toolkit.Uwp.Notifications;
 
 public class Program
 {

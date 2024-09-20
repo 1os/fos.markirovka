@@ -1,0 +1,50 @@
+name: fos-markirovka
+base: core24
+#title: Bitrix24 Cloud Cash Machine
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  armhf:
+    build-on: [armhf]
+    build-for: [armhf]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+version: '2024.09.20'
+summary: 1OS.Markirovka # 79 char long summary
+description: |
+  This app connect your Thermal printer to Bitrix24
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+icon: ./icon.png
+
+apps:    
+  fos-markirovka:
+    command: run.sh
+    desktop: usr/share/applications/fos-markirovka.desktop
+    plugs:
+      - desktop
+    environment:
+      PATH: $PATH:$SNAP/
+    plugs: [network, cups, desktop]
+
+plugs:
+  foo-install-cups:
+    interface: content
+    content: foo
+    default-provider: cups
+    target: $SNAP_DATA/foo
+
+parts:
+  assets:
+    source: assets/
+    plugin: dump
+  libs:
+    plugin: dump
+    source:
+      - on amd64: bin/Release/net8.0/linux-x64/publish/
+      - on armhf: bin/Release/net8.0/linux-arm/publish/
+      - on arm64: bin/Release/net8.0/linux-arm64/publish/
+    after: [assets]
+  

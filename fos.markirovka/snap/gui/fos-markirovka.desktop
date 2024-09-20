@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=fosmarkirovka URL Handler
+NoDisplay=true
+Exec=fos-markirovka %u
+Icon=${SNAP}/meta/gui/fos-markirovka.png
+Terminal=false
+MimeType=x-scheme-handler/fosmarkirovka;
