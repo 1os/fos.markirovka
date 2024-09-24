@@ -76,11 +76,12 @@ parts:
     plugin: dump
   libs:
     plugin: dump
-    source:
-      - on amd64: bin/Release/net8.0/linux-x64/publish/
-      - on armhf: bin/Release/net8.0/linux-arm/publish/
-      - on arm64: bin/Release/net8.0/linux-arm64/publish/
+    source: .
     after: [assets]
+    override-build: |
+      dotnet publish fos.markirovka.csproj --configuration Release --self-contained -o ${CRAFT_PART_INSTALL}
+    build-packages: 
+      - dotnet-sdk-8.0
     stage-packages:
       - libnotify-bin
   cups-client:
