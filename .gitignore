@@ -1,3 +1,5 @@
 1ОС.Маркировка ЧестныйЗнак.zip
 bin
 obj
+.vscode
+*.snap

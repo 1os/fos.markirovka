@@ -76,9 +76,9 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                filename = "/snap/fos-markirovka/current/usr/bin/lpstat";
+                filename = "lpstat";
                 arguments = "-p";
-                Console.Write(filename + " " + arguments);
+                Console.WriteLine(filename + " " + arguments);
                 using (Process process = new Process())
                 {
                     ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -99,9 +99,9 @@ public class Program
                     while (!process.WaitForExit(1000));
                 }
 
-                filename = "/snap/fos-markirovka/current/usr/bin/lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
-                Console.Write(filename + " " + arguments);
+                filename = "lp";
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
+                Console.WriteLine(filename + " " + arguments);
                 using (Process process = new Process())
                 {
                     ProcessStartInfo startInfo = new ProcessStartInfo();

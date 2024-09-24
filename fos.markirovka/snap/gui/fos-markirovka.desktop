@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=fosmarkirovka URL Handler
+Name=1ОС.Маркировка прямая печать
 NoDisplay=true
 Exec=fos-markirovka %u
 Icon=${SNAP}/meta/gui/icon.png
