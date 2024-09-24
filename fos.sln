@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fos.markirovka", "fos.markirovka\fos.markirovka.csproj", "{37050F49-3694-473D-BDD5-8D2CB5206976}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fos.markirovka", "fos.markirovka.csproj", "{37050F49-3694-473D-BDD5-8D2CB5206976}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
