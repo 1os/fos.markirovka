@@ -76,29 +76,6 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                filename = "lpstat";
-                arguments = "-p";
-                Console.WriteLine(filename + " " + arguments);
-                using (Process process = new Process())
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    startInfo.FileName = filename;
-                    startInfo.Arguments = arguments;
-                    process.StartInfo = startInfo;
-                    process.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
-                    process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
-                    process.Start();
-                    do
-                    {
-                        if (!process.HasExited)
-                        {
-                            process.Refresh();
-                        }
-                    }
-                    while (!process.WaitForExit(1000));
-                }
-
                 filename = "lp";
                 arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
                 Console.WriteLine(filename + " " + arguments);
