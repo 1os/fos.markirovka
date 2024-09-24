@@ -52,7 +52,7 @@ public class Program
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
 
                 Console.Write(filename + " " + arguments);
                 using (Process process = new Process())
@@ -76,9 +76,8 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
-
+                filename = "/snap/fos-markirovka/current/usr/bin/lpstat";
+                arguments = "-p";
                 Console.Write(filename + " " + arguments);
                 using (Process process = new Process())
                 {
@@ -87,6 +86,8 @@ public class Program
                     startInfo.FileName = filename;
                     startInfo.Arguments = arguments;
                     process.StartInfo = startInfo;
+                    process.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
+                    process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
                     process.Start();
                     do
                     {
@@ -96,13 +97,37 @@ public class Program
                         }
                     }
                     while (!process.WaitForExit(1000));
-                    Console.WriteLine("Отправили на печать этикетку");
                 }
+
+                filename = "/snap/fos-markirovka/current/usr/bin/lp";
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
+                Console.Write(filename + " " + arguments);
+                using (Process process = new Process())
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = filename;
+                    startInfo.Arguments = arguments;
+                    process.StartInfo = startInfo;
+                    process.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
+                    process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
+                    process.Start();
+                    do
+                    {
+                        if (!process.HasExited)
+                        {
+                            process.Refresh();
+                        }
+                    }
+                    while (!process.WaitForExit(1000));
+                }
+                Process.Start("notify-send", "-a \"1ОС.Маркировка\" -i /snap/fos-markirovka/current/meta/gui/icon.png  \"Отправили на печать этикетку\"");
+                Console.WriteLine("Отправили на печать этикетку");
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{1}mm -d '{2}' {3}", media, printer, filepath);
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
 
                 Console.Write(filename + " " + arguments);
                 using (Process process = new Process())
@@ -147,6 +172,7 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
+                Process.Start("notify-send", "-a \"1ОС.Маркировка\" -i /snap/fos-markirovka/current/meta/gui/icon.png  \"Успешно настроили приложение для работы Linux.\"");
                 Console.WriteLine("Успешно настроили приложение для работы Linux.");
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

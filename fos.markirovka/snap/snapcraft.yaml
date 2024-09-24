@@ -13,8 +13,7 @@ platforms:
     build-for: [arm64]
 version: '2024.09.20'
 summary: 1OS.Markirovka # 79 char long summary
-description: |
-  This app connect your Thermal printer to Bitrix24
+description: This app connect your Thermal printer to Bitrix24
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 icon: ./icon.png
@@ -22,12 +21,21 @@ icon: ./icon.png
 apps:    
   fos-markirovka:
     command: run.sh
-    desktop: usr/share/applications/fos-markirovka.desktop
-    plugs:
-      - desktop
+    extensions:
+      - gnome
+    common-id: fos-markirovka
     environment:
       PATH: $PATH:$SNAP/
-    plugs: [network, cups, desktop]
+    plugs: [home, network, cups, desktop]
+  lp:
+    command: usr/bin/lp
+    plugs: [network, home, cups]
+  lpstat:
+    command: usr/bin/lpstat
+    plugs: [network, avahi-observe, cups]
+  lpoptions:
+    command: usr/bin/lpoptions
+    plugs: [network, home, cups]
 
 plugs:
   foo-install-cups:
@@ -47,4 +55,16 @@ parts:
       - on armhf: bin/Release/net8.0/linux-arm/publish/
       - on arm64: bin/Release/net8.0/linux-arm64/publish/
     after: [assets]
+    stage-packages:
+      - libnotify-bin
+  cups-client:
+    plugin: dump
+    source: .
+    stage-packages:
+        - cups-client
+        - libcups2
+    prime:
+        - usr/bin/*
+        - usr/sbin/*
+        - usr/lib/*
   

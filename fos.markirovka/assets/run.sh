@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd $SNAP/
-./fos.markirovka
+./fos.markirovka $1
