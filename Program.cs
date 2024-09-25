@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime;
@@ -11,11 +9,6 @@ using System.IO;
 
 public class Program
 {
-    public static void handleOpenURL(string[] args)
-    {
-        File.WriteAllLines(Path.GetTempPath() + Guid.NewGuid().ToString() + ".txt", Environment.GetCommandLineArgs());
-    }
-
     public static void Main(string[] args)
     {
         Console.WriteLine("Приложение обработчик печати этикеток честный знак");
@@ -23,7 +16,6 @@ public class Program
 
         if (args.Length > 0 && args[0].IndexOf("fosmarkirovka:") == 0)
         {
-            //lp -o fit-to-page -o media=Custom.58x40mm -d Xprinter_XP_365B km.png
             var query = args[0].Split('?')[1];
             var parms = query.Split('&');
             var media = "";
@@ -52,7 +44,7 @@ public class Program
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
 
                 Console.Write(filename + " " + arguments);
                 using (Process process = new Process())
@@ -86,8 +78,6 @@ public class Program
                     startInfo.FileName = filename;
                     startInfo.Arguments = arguments;
                     process.StartInfo = startInfo;
-                    process.OutputDataReceived += (s, e) => Console.WriteLine(e.Data);
-                    process.ErrorDataReceived += (s, e) => Console.WriteLine(e.Data);
                     process.Start();
                     do
                     {
@@ -104,7 +94,7 @@ public class Program
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d '{1}' {2}", media, printer, filepath);
+                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
 
                 Console.Write(filename + " " + arguments);
                 using (Process process = new Process())
@@ -126,7 +116,6 @@ public class Program
                     Console.WriteLine("Отправили на печать этикетку");
                 }
             }
-            Thread.Sleep(5);
             File.Delete(filepath);
         }
         else
