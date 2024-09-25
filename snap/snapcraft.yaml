@@ -4,8 +4,6 @@ base: core24
 platforms:
   amd64:
     build-on: [amd64]
-  armhf:
-    build-on: [arm64]
   arm64:
     build-on: [arm64]
 version: '2024.09.25'
