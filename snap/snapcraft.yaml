@@ -6,7 +6,7 @@ platforms:
     build-on: [amd64]
   arm64:
     build-on: [arm64]
-version: '2024.09.25'
+version: '2024.09.26'
 summary: 1OS.Markirovka # 79 char long summary
 description: This app connect your Thermal printer to Bitrix24
 grade: stable # must be 'stable' to release into candidate/stable channels

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using System.IO;
+using System.Net;
 
 public class Program
 {
@@ -37,7 +38,10 @@ public class Program
                         break;
                     case "url":
                         url = HttpUtility.UrlDecode(toupl[1]);
-                        File.WriteAllBytes(filepath, Convert.FromBase64String(url));
+                        using (var client = new WebClient())
+                        {
+                            client.DownloadFile(url, filepath);
+                        }
                         break;
                 }
             }
