@@ -7,6 +7,9 @@ using System.Text;
 using System.Web;
 using System.IO;
 using System.Net;
+using System.Drawing.Printing;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 public class Program
 {
@@ -47,32 +50,42 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                filename = "lp";
-                arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
-
-                Console.Write(filename + " " + arguments);
-                using (Process process = new Process())
+                using (PrintDocument pd = new PrintDocument())
                 {
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    startInfo.FileName = filename;
-                    startInfo.Arguments = arguments;
-                    process.StartInfo = startInfo;
-                    process.Start();
-                    do
+                    var sizes = media.Split("x");
+                    pd.DefaultPageSettings.PrinterResolution.X = 600;
+                    pd.DefaultPageSettings.PrinterResolution.Y = 600;
+                    pd.DefaultPageSettings.Color = false;
+                    pd.DefaultPageSettings.PaperSize = new PaperSize(media,
+                    (int)(int.Parse(sizes[0]) * (1.0 / 25.4) * 100.0),
+                    (int)(int.Parse(sizes[1]) * (1.0 / 25.4) * 100.0));
+                    pd.PrinterSettings.PrinterName = printer;
+                    pd.PrinterSettings.DefaultPageSettings.PrinterResolution.X = 600;
+                    pd.PrinterSettings.DefaultPageSettings.PrinterResolution.Y = 600;
+                    pd.PrinterSettings.DefaultPageSettings.Color = false;
+                    pd.PrintPage += (object o, PrintPageEventArgs e) =>
                     {
-                        if (!process.HasExited)
-                        {
-                            process.Refresh();
-                        }
-                    }
-                    while (!process.WaitForExit(1000));
+                        e.PageSettings.PrinterResolution.X = 600;
+                        e.PageSettings.PrinterResolution.Y = 600;
+                        e.PageSettings.Color = false;
+                        e.Graphics.PageUnit = GraphicsUnit.Millimeter;
+                        e.Graphics.PageScale = 1f;
+
+                        Bitmap img = new Bitmap(filepath);
+                        var bmp1bpp = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format1bppIndexed);
+
+                        e.Graphics.Clear(Color.White);
+                        e.Graphics.DrawImage(img, 0, 0, float.Parse(sizes[0]), float.Parse(sizes[1]));
+                        img.Dispose();
+                    };
+                    pd.Print();
+
                     Console.WriteLine("Отправили на печать этикетку");
                 }
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                filename = "lp";
+                filename = "lpr";
                 arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
                 Console.WriteLine(filename + " " + arguments);
                 using (Process process = new Process())
@@ -97,7 +110,7 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                filename = "lp";
+                filename = "lpr";
                 arguments = string.Format("-o fit-to-page -o media=Custom.{0}mm -d \"{1}\" {2}", media, printer, filepath);
 
                 Console.Write(filename + " " + arguments);
