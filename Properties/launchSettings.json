@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "fos.markirovka": {
+      "commandName": "Project",
+      "commandLineArgs": "fosmarkirovka://?media=58x40&printer=Microsoft+Print+to+PDF&url=https%3A%2F%2Fcdn-ru.bitrix24.ru%2Fb14545%2Fiblock%2F479%2F4797672e1465ead1b00bc8c24530107c%2Fkm-55456.png"
+    }
+  }
+}

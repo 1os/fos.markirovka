@@ -10,13 +10,13 @@ using System.Net;
 using System.Drawing.Printing;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System;
 
 public class Program
 {
     public static void Main(string[] args)
     {
         Console.WriteLine("Приложение обработчик печати этикеток честный знак");
-
 
         if (args.Length > 0 && args[0].IndexOf("fosmarkirovka:") == 0)
         {
@@ -50,38 +50,43 @@ public class Program
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                using (PrintDocument pd = new PrintDocument())
+                var sizes = media.Split("x");
+#pragma warning disable CA1416 // Проверка совместимости платформы
+                using PrintDocument pd = new()
                 {
-                    var sizes = media.Split("x");
-                    pd.DefaultPageSettings.PrinterResolution.X = 600;
-                    pd.DefaultPageSettings.PrinterResolution.Y = 600;
-                    pd.DefaultPageSettings.Color = false;
-                    pd.DefaultPageSettings.PaperSize = new PaperSize(media,
-                    (int)(int.Parse(sizes[0]) * (1.0 / 25.4) * 100.0),
-                    (int)(int.Parse(sizes[1]) * (1.0 / 25.4) * 100.0));
-                    pd.PrinterSettings.PrinterName = printer;
-                    pd.PrinterSettings.DefaultPageSettings.PrinterResolution.X = 600;
-                    pd.PrinterSettings.DefaultPageSettings.PrinterResolution.Y = 600;
-                    pd.PrinterSettings.DefaultPageSettings.Color = false;
-                    pd.PrintPage += (object o, PrintPageEventArgs e) =>
-                    {
-                        e.PageSettings.PrinterResolution.X = 600;
-                        e.PageSettings.PrinterResolution.Y = 600;
-                        e.PageSettings.Color = false;
-                        e.Graphics.PageUnit = GraphicsUnit.Millimeter;
-                        e.Graphics.PageScale = 1f;
+                    PrinterSettings = { PrinterName = printer },
+                    DefaultPageSettings = {
+                        Margins = new Margins(0, 0, 0, 0),
+                        PaperSize =  new PaperSize(media,
+                            (int)(int.Parse(sizes[0]) * (1.0 / 25.4) * 100.0),
+                            (int)(int.Parse(sizes[1]) * (1.0 / 25.4) * 100.0)),
+                    },
+                    DocumentName = "markirovka.png"
+                };
+                pd.PrintPage += (object o, PrintPageEventArgs e) =>
+                {
 
-                        Bitmap img = new Bitmap(filepath);
-                        var bmp1bpp = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format1bppIndexed);
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                    e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    e.Graphics.PageUnit = GraphicsUnit.Millimeter;
+                    e.Graphics.PageScale = 1f;
+                    e.PageSettings.Margins = new Margins(0, 0, 0, 0);
+                    e.PageSettings.PaperSize = new PaperSize(media,
+                        (int)(int.Parse(sizes[0]) * (1.0 / 25.4) * 100.0),
+                        (int)(int.Parse(sizes[1]) * (1.0 / 25.4) * 100.0));
 
-                        e.Graphics.Clear(Color.White);
-                        e.Graphics.DrawImage(img, 0, 0, float.Parse(sizes[0]), float.Parse(sizes[1]));
-                        img.Dispose();
-                    };
-                    pd.Print();
+                    Bitmap img = new Bitmap(filepath);
+                    var bmp1bpp = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format1bppIndexed);
 
-                    Console.WriteLine("Отправили на печать этикетку");
-                }
+                    e.Graphics.Clear(Color.White);
+                    e.Graphics.DrawImage(bmp1bpp, 0, 0, float.Parse(sizes[0]), float.Parse(sizes[1]));
+                    bmp1bpp.Dispose();
+                    img.Dispose();
+                };
+#pragma warning restore IDE0079 // Удалить ненужное подавление
+                pd.Print();
+
+                Console.WriteLine("Отправили на печать этикетку");
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
